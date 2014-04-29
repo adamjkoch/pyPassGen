@@ -26,6 +26,8 @@
 import os, random, string
 from PyQt4 import QtCore, QtGui
 
+pyPassGenVersion = '0.01alpha'
+
 try:
 	_fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -42,7 +44,7 @@ except AttributeError:
 
 class Ui_pyPassGen(object):
 	# generate the password using the given length and characters
-	def genpwd(length, seed, chars):
+	def generatePassword(self, length, seed, chars):
 		random.seed = seed
 		return '' . join(random.choice(chars) for i in range(length))
 	
@@ -70,11 +72,9 @@ class Ui_pyPassGen(object):
 	
 	# generate the passwords
 	def generate(self):
-		# lock the widgets so they aren't changed mid-run
-		self.lockWidgets(False)
 		
 		# do some checks to make sure we have something to work with
-		if not self.chkNumbers.isChecked() and not self.chkLetters.isChecked() and not self.chkLetters.isChecked():
+		if not self.chkNumbers.isChecked() and not self.chkLetters.isChecked() and not self.chkSpecial.isChecked():
 			QtGui.QMessageBox.critical(pyPassGen, 'pyPassGen', 'You have all of the types of characters disabled, silly!')
 			return
 		
@@ -95,10 +95,69 @@ class Ui_pyPassGen(object):
 			if response == QtGui.QMessageBox.No:
 				self.lockWidgets(True)
 				return
+
+		# lock the widgets so they aren't changed mid-run
+		self.lockWidgets(False)				
 			
 		# generate the seed
 		self.setStatus('Generating Seed')
 		seed = (os.urandom(1024))
+		
+		# generate character string to use
+		self.setStatus('Generating Character List')
+		chars = ''
+		
+		# generate letters
+		if self.chkLetters.isChecked() == True:
+			# lowercase letters
+			chars += string.ascii_lowercase
+			# uppercase letters
+			if self.chkMixedCase.isChecked() == True:
+				chars += string.ascii_uppercase
+		
+		# add numbers
+		if self.chkNumbers.isChecked() == True:
+			chars += string.digits
+		
+		# add "special" characters
+		if self.chkSpecial.isChecked() == True:
+			chars += '!@#$%^&*?'
+			
+		# remove "similar" characters
+		if self.chkSimilar.isChecked() == True:
+			chars = chars.replace('i', '') # lowercase i
+			chars = chars.replace('I', '') # uppercase i
+			chars = chars.replace('l', '') # lowercase L
+			chars = chars.replace('O', '') # uppercase o
+			chars = chars.replace('0', '') # zero
+
+		# open blank file
+		txtFile = open(str(self.txtOutput.text()), 'w')
+		if not txtFile:
+			QtGui.QMessageBox.critical(pyPassGen, 'pyPassGen v%s' % pyPassGenVersion, 'Unable to open <b>%s</b> for writing.\n\nAborting.' % str(self.txtOutput.text()))
+			self.lockWidgets(True)
+			self.resetStatus()
+			return
+		
+		# for loop to generate passwords
+		for x in range(1, self.spnQuantity.value()):
+			self.setStatus('Generating %d of %d' % (x, self.spnQuantity.value()))
+			txtFile.write('%s\n' % self.generatePassword(self.spnLength.value(), seed, chars))
+		
+		# close text file and finish up
+		txtFile.close()
+		self.setStatus('Finished Generating %d Passwords' % self.spnQuantity.value())
+		
+		# query user to open the file
+		response = QtGui.QMessageBox.question(pyPassGen,
+						'pyPassGen v%s' % pyPassGenVersion, 'Finished generating <b>%d</b> password.\n\nWould you like to open the text file now?' % self.spnQuantity.value(),
+						QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+		if response == QtGui.QMessageBox.Yes:
+			os.system('start %s' % str(self.txtOutput.text()))
+		
+		# done!
+		self.lockWidgets(True)
+		self.resetStatus()
 
 	def setupUi(self, pyPassGen):
 		# main window
@@ -170,7 +229,7 @@ class Ui_pyPassGen(object):
 		self.spnLength.setGeometry(QtCore.QRect(130, 10, 42, 22))
 		self.spnLength.setMinimum(1)
 		self.spnLength.setMaximum(128)
-		self.spnLength.setProperty('value', 12)
+		self.spnLength.setProperty('value', 15)
 		self.spnLength.setObjectName(_fromUtf8('spnLength'))
 
 		# quantity label
@@ -187,6 +246,7 @@ class Ui_pyPassGen(object):
 		self.spnQuantity.setGeometry(QtCore.QRect(130, 40, 42, 22))
 		self.spnQuantity.setMinimum(1)
 		self.spnQuantity.setMaximum(1024)
+		self.spnQuantity.setProperty('value', 10)
 		self.spnQuantity.setObjectName(_fromUtf8('spnQuantity'))
 
 		# output file label
