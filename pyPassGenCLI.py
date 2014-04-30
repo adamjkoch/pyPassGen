@@ -117,6 +117,12 @@ def main(argv):
 	# print character list if requested
 	if args.charlist is True:
 		print chars
+		return
+	
+	# generate the passwords
+	for i in range(args.quantity):
+		if args.output is not None:
+			txtFile
 		
 if __name__ == '__main__':
 	sys.exit(main(sys.argv))
