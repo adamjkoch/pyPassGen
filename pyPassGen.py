@@ -302,7 +302,7 @@ class Ui_pyPassGen(object):
 	def retranslateUi(self, pyPassGen):
 		pyPassGen.setWindowTitle(_translate('pyPassGen', 'pyPassGen v%s', None))
 		self.chkMixedCase.setText(_translate('pyPassGen', 'Mixed Case Letters', None))
-		self.chkNumbers.setText(_translate('pyPassGen', 'Numbers', None))
+		self.chkNumbers.setText(_translate('pyPassGen', 'Digits', None))
 		self.chkSpecial.setText(_translate('pyPassGen', 'Special Characters', None))
 		self.chkLetters.setText(_translate('pyPassGen', 'Letters', None))
 		self.chkSimilar.setText(_translate('pyPassGen', 'No Similar Characters', None))
