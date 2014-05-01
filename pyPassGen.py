@@ -175,7 +175,7 @@ class Ui_pyPassGen(object):
 		font.setPointSize(9)
 		pyPassGen.setFont(font)
 		icon = QtGui.QIcon()
-		icon.addPixmap(QtGui.QPixmap(_fromUtf8('password.png')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+		icon.addPixmap(QtGui.QPixmap(_fromUtf8('password.ico')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 		pyPassGen.setWindowIcon(icon)
 
 		# central widget
@@ -300,7 +300,7 @@ class Ui_pyPassGen(object):
 		pyPassGen.connect(self.chkLetters, QtCore.SIGNAL('stateChanged(int)'), self.lettersChanged)
 
 	def retranslateUi(self, pyPassGen):
-		pyPassGen.setWindowTitle(_translate('pyPassGen', 'pyPassGen v%s', None))
+		pyPassGen.setWindowTitle(_translate('pyPassGen', 'pyPassGen v%s' % pyPassGenVersion, None))
 		self.chkMixedCase.setText(_translate('pyPassGen', 'Mixed Case Letters', None))
 		self.chkNumbers.setText(_translate('pyPassGen', 'Digits', None))
 		self.chkSpecial.setText(_translate('pyPassGen', 'Special Characters', None))

@@ -27,7 +27,7 @@ import os, random, string, optparse, sys
 
 pyPassGenCLIVersion = '0.01alpha'
 
-def generate(length, seed, chars):
+def generatePassword(length, seed, chars):
 	random.seed = seed
 	return '' . join(random.choice(chars) for i in range(length))
 
@@ -74,7 +74,7 @@ def main(argv):
 	elif args.quantity is None or type(args.quantity) is not int:
 		print 'Error: Quantity (-q, --quantity) must be an integer.'
 		return
-	elif args.output is not None and type(args.output) is not string:
+	elif args.output is not None and type(args.output) is not str:
 		print 'Error: Output file (-o, --output) must be a valid filename.'
 		return
 		
@@ -120,9 +120,24 @@ def main(argv):
 		return
 	
 	# generate the passwords
+	txtFile = open(args.output, 'w') if args.output is not None else None
+	
+	# output depends on parameters provided
 	for i in range(args.quantity):
-		if args.output is not None:
-			txtFile
+		passwd = generatePassword(args.length, seed, chars)
+		if passwd is not None:
+			if args.output is not None:
+				txtFile.write('%s\n' % passwd)
+			else:
+				print passwd
+		else:
+			print 'Something went wrong generating the password.'
+			return
+	
+	# close text file, if open
+	if txtFile is not None:
+		txtFile.close()
+		print 'Generated %s passwords, saved to %s' % (args.quantity, args.output)
 		
 if __name__ == '__main__':
 	sys.exit(main(sys.argv))
